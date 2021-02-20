@@ -2,15 +2,20 @@
 
 namespace App\Entity;
 
-use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
- * @ApiResource()
+ * @ApiResource(      
+ *     itemOperations={"put","get"},
+ * attributes={"access_control"="is_granted('ROLE_ADMIN')"}, 
+ * )
  */
 class User implements UserInterface 
 {
@@ -24,24 +29,28 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank()
+     * @Groups({"post"})
      */
     private $Nom;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank()
+     * @Groups({"post"})
      */
     private $Prenom;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank()
+     * @Groups({"post"})
      */
     private $login;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank()
+     * @Groups({"post"})
      */
     private $username;
 
@@ -54,6 +63,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="boolean")
      * @Assert\NotBlank()
+     * @Groups({"post"})
      */
     private $Is_Active;
 
@@ -62,7 +72,23 @@ class User implements UserInterface
      */
     private $Role;
     private $roles = [];
+    /**
+     * @Groups("post")
+     * @SerializedName("password")
+     */
+    private $plainPassword;
 
+    public function isActive()
+    {
+        return ($this->getIsActive() === true ) ? true : false;
+    }
+    /*public function isExpired()
+    {
+        //$dateDuJour = new \Datetime();
+        //dd(Affectation::get());
+        
+        
+    }*/
     public function getId(): ?int
     {
         return $this->id;
@@ -186,6 +212,15 @@ class User implements UserInterface
     {
         $this->Role = $Role;
 
+        return $this;
+    }
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+    public function setPlainPassword(string $plainPassword): self
+    {
+        $this->plainPassword = $plainPassword;
         return $this;
     }
 }
