@@ -2,14 +2,22 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\EntreeRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Entity\Article;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\EntreeRepository;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ * itemOperations={"put","get"},
+ * attributes={"access_control"="is_granted('ROLE_ADMIN')"}, )
+ * @ApiFilter(DateFilter::class, properties={"dateEntree"})
+ * @ApiFilter(SearchFilter::class, properties={"numeroBE": "partial"})
  * @ORM\Entity(repositoryClass=EntreeRepository::class)
  */
 class Entree
@@ -24,7 +32,7 @@ class Entree
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $numeroBC;
+    private $numeroBE;
 
     /**
      * @ORM\Column(type="integer")
@@ -36,34 +44,42 @@ class Entree
      */
     private $prixUnitaireHT;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $montantHT;
+   
+    
 
     /**
-     * @ORM\ManyToOne(targetEntity=Article::class, inversedBy="entree")
+     * @ORM\ManyToOne(targetEntity=Entrepot::class, inversedBy="entree")
      */
-    private $article;
+    private $entrepot;
 
-    public function __construct()
-    {
-        $this->article = new ArrayCollection();
-    }
+    /**
+     * @ORM\ManyToOne(targetEntity=Stock::class, inversedBy="entree")
+     * 
+     */
+    private $stock;
 
+    /**
+     * @ORM\Column(type="date")
+     */
+    private $dateEntree;
+
+   
+
+   
+    
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getNumeroBC(): ?string
+    public function getNumeroBE(): ?string
     {
-        return $this->numeroBC;
+        return $this->numeroBE;
     }
 
-    public function setNumeroBC(string $numeroBC): self
+    public function setNumeroBE(string $numeroBE): self
     {
-        $this->numeroBC = $numeroBC;
+        $this->numeroBE = $numeroBE;
 
         return $this;
     }
@@ -92,17 +108,57 @@ class Entree
         return $this;
     }
 
-    public function getMontantHT(): ?int
+    
+
+    
+
+    
+
+    public function getEntrepot(): ?Entrepot
     {
-        return $this->montantHT;
+        return $this->entrepot;
     }
 
-    public function setMontantHT(int $montantHT): self
+    public function setEntrepot(?Entrepot $entrepot): self
     {
-        $this->montantHT = $montantHT;
+        $this->entrepot = $entrepot;
 
         return $this;
     }
+
+    public function getStock(): ?Stock
+    {
+        return $this->stock;
+    }
+
+    public function setStock(?Stock $stock): self
+    {
+        $this->stock = $stock;
+        $newStock=$this->stock->getStockActuel() + $this->quantite;
+        //dd($newStock); 
+        $stock=$this->stock->setStockActuel($newStock);
+        //dd($stock); 
+        //} 
+
+        return $this;
+    }
+
+    public function getDateEntree(): ?\DateTimeInterface
+    {
+        return $this->dateEntree;
+    }
+
+    public function setDateEntree(\DateTimeInterface $dateEntree): self
+    {
+        $this->dateEntree = $dateEntree;
+
+        return $this;
+    }
+
+    
+
+   
+    
 
    
 }

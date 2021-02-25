@@ -12,7 +12,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=RoleRepository::class)
- * @ApiResource()
+ * @ApiResource(
+ * itemOperations={"put","get"},
+ * attributes={"access_control"="is_granted('ROLE_ADMIN')"}, )
  */
 class Role
 {

@@ -9,7 +9,9 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ * itemOperations={"put","get"},
+ * attributes={"access_control"="is_granted('ROLE_ADMIN')"}, )
  * @ORM\Entity(repositoryClass=SortieRepository::class)
  */
 class Sortie
@@ -24,7 +26,7 @@ class Sortie
     /**
      * @ORM\Column(type="integer")
      */
-    private $numero_BL;
+    private $numeroBS;
 
     /**
      * @ORM\Column(type="integer")
@@ -36,29 +38,36 @@ class Sortie
      */
     private $dateSortie;
 
+   
     /**
-     * @ORM\ManyToOne(targetEntity=Article::class, inversedBy="sortie")
+     * @ORM\ManyToOne(targetEntity=Entrepot::class, inversedBy="sortie")
      */
-    private $article;
+    private $entrepot;
 
-    public function __construct()
-    {
-        $this->article = new ArrayCollection();
-    }
+    /**
+     * @ORM\ManyToOne(targetEntity=Stock::class, inversedBy="sortie")
+     */
+    private $stock;
+
+    
+
+   
+   
+    
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getNumeroBL(): ?int
+    public function getNumeroBS(): ?int
     {
-        return $this->numero_BL;
+        return $this->numeroBS;
     }
 
-    public function setNumeroBL(int $numero_BL): self
+    public function setNumeroBS(int $numeroBS): self
     {
-        $this->numero_BL = $numero_BL;
+        $this->numeroBS = $numeroBS;
 
         return $this;
     }
@@ -88,4 +97,41 @@ class Sortie
     }
 
     
+
+    
+
+    public function getEntrepot(): ?Entrepot
+    {
+        return $this->entrepot;
+    }
+
+    public function setEntrepot(?Entrepot $entrepot): self
+    {
+        $this->entrepot = $entrepot;
+
+        return $this;
+    }
+
+    public function getStock(): ?Stock
+    {
+        return $this->stock;
+    }
+
+    public function setStock(?Stock $stock): self
+    {
+        $this->stock = $stock;
+        $newStock=$this->stock->getStockActuel() - $this->quantite;
+        //dd($newStock); 
+        $stock=$this->stock->setStockActuel($newStock);
+
+        return $this;
+    }
+
+    
+
+    
+    
 }
+
+    
+

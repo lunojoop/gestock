@@ -9,7 +9,9 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ * itemOperations={"put","get"},
+ * attributes={"access_control"="is_granted('ROLE_ADMIN')"}, )
  * @ORM\Entity(repositoryClass=DepartementRepository::class)
  */
 class Departement
@@ -26,10 +28,7 @@ class Departement
      */
     private $libelle;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=Entrepot::class, mappedBy="departement")
-     */
-    private $entrepots;
+    
 
     /**
      * @ORM\OneToMany(targetEntity=Famille::class, mappedBy="departement")
@@ -38,7 +37,7 @@ class Departement
 
     public function __construct()
     {
-        $this->entrepots = new ArrayCollection();
+        
         $this->famille = new ArrayCollection();
     }
 
@@ -59,23 +58,7 @@ class Departement
         return $this;
     }
 
-    /**
-     * @return Collection|Entrepot[]
-     */
-    public function getEntrepots(): Collection
-    {
-        return $this->entrepots;
-    }
-
-    public function addEntrepot(Entrepot $entrepot): self
-    {
-        if (!$this->entrepots->contains($entrepot)) {
-            $this->entrepots[] = $entrepot;
-            $entrepot->addDepartement($this);
-        }
-
-        return $this;
-    }
+    
 
     public function removeEntrepot(Entrepot $entrepot): self
     {

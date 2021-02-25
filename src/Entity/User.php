@@ -82,13 +82,7 @@ class User implements UserInterface
     {
         return ($this->getIsActive() === true ) ? true : false;
     }
-    /*public function isExpired()
-    {
-        //$dateDuJour = new \Datetime();
-        //dd(Affectation::get());
-        
-        
-    }*/
+    
     public function getId(): ?int
     {
         return $this->id;

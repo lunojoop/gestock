@@ -7,7 +7,9 @@ use App\Repository\InventaireRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ * itemOperations={"put","get"},
+ * attributes={"access_control"="is_granted('ROLE_USER')"}, )
  * @ORM\Entity(repositoryClass=InventaireRepository::class)
  */
 class Inventaire
@@ -29,10 +31,21 @@ class Inventaire
      */
     private $quantite;
 
+    
     /**
-     * @ORM\ManyToOne(targetEntity=Article::class, inversedBy="inventaires")
+     * @ORM\Column(type="string", length=255)
      */
-    private $article;
+    private $NumeroFI;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Entrepot::class, inversedBy="inventaire")
+     */
+    private $entrepot;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Stock::class, inversedBy="inventaire")
+     */
+    private $stock;
 
     public function getId(): ?int
     {
@@ -63,15 +76,43 @@ class Inventaire
         return $this;
     }
 
-    public function getArticle(): ?Article
+
+    public function getNumeroFI(): ?string
     {
-        return $this->article;
+        return $this->NumeroFI;
     }
 
-    public function setArticle(?Article $article): self
+    public function setNumeroFI(string $NumeroFI): self
     {
-        $this->article = $article;
+        $this->NumeroFI = $NumeroFI;
 
         return $this;
     }
+
+    public function getEntrepot(): ?Entrepot
+    {
+        return $this->entrepot;
+    }
+
+    public function setEntrepot(?Entrepot $entrepot): self
+    {
+        $this->entrepot = $entrepot;
+
+        return $this;
+    }
+
+    public function getStock(): ?Stock
+    {
+        return $this->stock;
+    }
+
+    public function setStock(?Stock $stock): self
+    {
+        $this->stock = $stock;
+        $stock=$this->stock->setStockInventaire($this->quantite);
+
+        return $this;
+    }
+    
 }
+

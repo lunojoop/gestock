@@ -2,14 +2,22 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\ArticleRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ArticleRepository;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\NumericFilter;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ * itemOperations={"put","get"},
+ * attributes={"access_control"="is_granted('ROLE_ADMIN')"}, )
+ * @ApiFilter(SearchFilter::class, properties={"designation": "word_start"})
+ * @ApiFilter(NumericFilter::class, properties={"id":"exact"})
  * @ORM\Entity(repositoryClass=ArticleRepository::class)
  */
 class Article
@@ -31,15 +39,6 @@ class Article
      */
     private $conditionnement;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $stock_initial;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $stock_actuel;
 
     /**
      * @ORM\ManyToOne(targetEntity=Fournisseur::class, inversedBy="articles")
@@ -52,30 +51,27 @@ class Article
     private $famille;
 
     /**
-     * @ORM\OneToMany(targetEntity=Entree::class, mappedBy="article")
+     * @ORM\OneToMany(targetEntity=Stock::class, mappedBy="article")
      */
-    private $entree;
+    private $stock;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Sortie::class, mappedBy="article")
-     */
-    private $sortie;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Retour::class, mappedBy="article")
-     */
-    private $retours;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Inventaire::class, mappedBy="article")
-     */
-    private $inventaires;
+   
 
     public function __construct()
     {
-        $this->retours = new ArrayCollection();
-        $this->inventaires = new ArrayCollection();
+        $this->stock = new ArrayCollection();
+       
     }
+
+    
+
+    
+
+    
+
+    
+
+    
 
     public function getId(): ?int
     {
@@ -106,29 +102,7 @@ class Article
         return $this;
     }
 
-    public function getStockInitial(): ?int
-    {
-        return $this->stock_initial;
-    }
-
-    public function setStockInitial(int $stock_initial): self
-    {
-        $this->stock_initial = $stock_initial;
-
-        return $this;
-    }
-
-    public function getStockActuel(): ?int
-    {
-        return $this->stock_actuel;
-    }
-
-    public function setStockActuel(int $stock_actuel): self
-    {
-        $this->stock_actuel = $stock_actuel;
-
-        return $this;
-    }
+    
 
     public function getFournisseur(): ?Fournisseur
     {
@@ -154,6 +128,42 @@ class Article
         return $this;
     }
 
+    /**
+     * @return Collection|Stock[]
+     */
+    public function getStock(): Collection
+    {
+        return $this->stock;
+    }
+
+    public function addStock(Stock $stock): self
+    {
+        if (!$this->stock->contains($stock)) {
+            $this->stock[] = $stock;
+            $stock->setArticle($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStock(Stock $stock): self
+    {
+        if ($this->stock->removeElement($stock)) {
+            // set the owning side to null (unless already changed)
+            if ($stock->getArticle() === $this) {
+                $stock->setArticle(null);
+            }
+        }
+
+        return $this;
+    }
+
+
+    
+
+    
+
+    
     
 
     

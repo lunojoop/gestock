@@ -9,7 +9,9 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ * itemOperations={"put","get"},
+ * attributes={"access_control"="is_granted('ROLE_ADMIN')"}, )
  * @ORM\Entity(repositoryClass=RetourRepository::class)
  */
 class Retour
@@ -36,10 +38,17 @@ class Retour
      */
     private $dateRetour;
 
+    
+
     /**
-     * @ORM\ManyToOne(targetEntity=Article::class, inversedBy="retours")
+     * @ORM\ManyToOne(targetEntity=Entrepot::class, inversedBy="retour")
      */
-    private $article;
+    private $entrepot;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Stock::class, inversedBy="retour")
+     */
+    private $stock;
 
     public function __construct()
     {
@@ -87,26 +96,33 @@ class Retour
         return $this;
     }
 
-    /**
-     * @return Collection|Article[]
-     */
-    public function getArticle(): Collection
+    
+
+    
+
+    public function getEntrepot(): ?Entrepot
     {
-        return $this->article;
+        return $this->entrepot;
     }
 
-    public function addArticle(Article $article): self
+    public function setEntrepot(?Entrepot $entrepot): self
     {
-        if (!$this->article->contains($article)) {
-            $this->article[] = $article;
-        }
+        $this->entrepot = $entrepot;
 
         return $this;
     }
 
-    public function removeArticle(Article $article): self
+    public function getStock(): ?Stock
     {
-        $this->article->removeElement($article);
+        return $this->stock;
+    }
+
+    public function setStock(?Stock $stock): self
+    {
+        $this->stock = $stock;
+        $newStock=$this->stock->getStockActuel() + $this->quantite;
+        //dd($newStock); 
+        $stock=$this->stock->setStockActuel($newStock);
 
         return $this;
     }
