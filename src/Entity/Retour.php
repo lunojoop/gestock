@@ -68,6 +68,11 @@ class Retour
     public function setNumeroBR(string $numeroBR): self
     {
         $this->numeroBR = $numeroBR;
+        $count=uniqid();
+        $this->numeroBR = $numeroBR ;
+        //$rest = substr(". $count .", -7);
+        //$this->numeroBR= "BR".$rest;
+        $this->numeroBR= "BR".$count;
 
         return $this;
     }

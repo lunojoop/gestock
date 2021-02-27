@@ -68,6 +68,11 @@ class Sortie
     public function setNumeroBS(int $numeroBS): self
     {
         $this->numeroBS = $numeroBS;
+        $count=uniqid();
+        $this->numeroBS = $numeroBS ;
+        //$rest = substr(". $count .", -7);
+        //$this->numeroBS= "BS".$rest;
+        $this->numeroBS= "BS".$count;
 
         return $this;
     }

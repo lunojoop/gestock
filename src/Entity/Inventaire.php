@@ -85,6 +85,11 @@ class Inventaire
     public function setNumeroFI(string $NumeroFI): self
     {
         $this->NumeroFI = $NumeroFI;
+        $count=uniqid();
+        $this->NumeroFI = $NumeroFI ;
+        //$rest = substr(". $count .", -7);
+        //$this->numeroFI= "FI".$rest;
+        $this->NumeroFI= "FI".$count;
 
         return $this;
     }

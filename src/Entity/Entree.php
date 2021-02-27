@@ -11,6 +11,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ApiResource(
@@ -31,6 +32,8 @@ class Entree
 
     /**
      * @ORM\Column(type="string", length=255)
+     *  
+     * 
      */
     private $numeroBE;
 
@@ -69,7 +72,8 @@ class Entree
     
     public function getId(): ?int
     {
-        return $this->id;
+        return $this->id;//=sprintf("%05d",1);
+        
     }
 
     public function getNumeroBE(): ?string
@@ -79,7 +83,15 @@ class Entree
 
     public function setNumeroBE(string $numeroBE): self
     {
-        $this->numeroBE = $numeroBE;
+        //$cons=BE000;
+        //
+        $count=uniqid();
+        $this->numeroBE = $numeroBE ;
+        //$rest = substr(". $count .", -7);
+        //$this->numeroBE= "BE".$rest;
+        $this->numeroBE= "BE".$count;
+        
+        //dd($this->numeroBE);
 
         return $this;
     }
